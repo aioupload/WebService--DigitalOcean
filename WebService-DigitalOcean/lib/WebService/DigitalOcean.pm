@@ -9,6 +9,7 @@ use WebService::DigitalOcean::Region;
 use WebService::DigitalOcean::Size;
 use WebService::DigitalOcean::Image;
 use WebService::DigitalOcean::SSH::Key;
+use WebService::DigitalOcean::Domain;
 
 #use 5.006;
 #use warnings FATAL => 'all';
@@ -53,7 +54,8 @@ my %json_keys = (
 	'WebService::DigitalOcean::sizes' => 'sizes',		
 	'WebService::DigitalOcean::ssh_keys' => 'ssh_keys',		
 	'WebService::DigitalOcean::create_ssh_key' => 'ssh_key',		
-
+	'WebService::DigitalOcean::ssh_key' => 'ssh_key',		
+	'WebService::DigitalOcean::domains' => 'domains',		
 	'WebService::DigitalOcean::_external_request' => 'event_id',		
 );
 
@@ -254,6 +256,28 @@ sub create_ssh_key {
 	my $self = shift;
 	my %params = @_;
 	return $self->_create('ssh_keys/new', \%params, 'WebService::DigitalOcean::SSH::Key');
+}
+
+=head2 ssh_key
+
+=cut
+
+sub ssh_key {
+	my ($self, $id) = @_;
+
+	$self->_request("ssh_keys/$id");
+	return $self->_decode('WebService::DigitalOcean::SSH::Key');
+}
+
+=head2 domains
+
+=cut
+
+sub domains {
+	my ($self) = @_;
+	
+	$self->_request('domains');
+	return $self->_decode_many('WebService::DigitalOcean::Domain');
 }
 
 =head1 AUTHOR
