@@ -8,6 +8,7 @@ use WebService::DigitalOcean::Droplet;
 use WebService::DigitalOcean::Region;
 use WebService::DigitalOcean::Size;
 use WebService::DigitalOcean::Image;
+use WebService::DigitalOcean::SSH::Key;
 
 #use 5.006;
 #use warnings FATAL => 'all';
@@ -44,9 +45,11 @@ my %json_keys = (
 	'WebService::DigitalOcean::images' => 'images',		
 	'WebService::DigitalOcean::image' => 'image',		
 	'WebService::DigitalOcean::sizes' => 'sizes',		
+	'WebService::DigitalOcean::ssh_keys' => 'ssh_keys',		
 
 	'WebService::DigitalOcean::Droplet::_request' => 'event_id',		
 	'WebService::DigitalOcean::Image::_request' => 'event_id',		
+	'WebService::DigitalOcean::SSH::Key::_request' => 'event_id',		
 );
 
 =head1 NAME
@@ -94,7 +97,7 @@ sub _request {
 	print "$uri\n";
 	my $response = $self->ua->request($req);
 
-	my $caller = ( caller(1) )[3];
+	my $caller = $self->_caller;
 	my $json = JSON::XS->new->utf8->decode ($response->content);
 	my $message = $json->{message} || $json->{error_message};
 	die "ERROR $message" if $json->{status} ne 'OK';
@@ -118,6 +121,19 @@ sub _decode_many {
 	}
 
 	return \@objs;
+}
+
+sub _create { 
+	my ($self) = @_;
+	$self->_request('droplets');
+	return $self->_decode_many('WebService::DigitalOcean::Droplet');
+}
+
+sub _caller { 
+	my ($self, $just_func) = @_;
+	my $caller = (caller(2))[3];
+	$caller =~ s/.*:://g if $just_func;
+	return $caller;
 }
 
 =head2 droplets
@@ -198,6 +214,31 @@ sub sizes {
 	$self->_request('sizes');
 	return $self->_decode_many('WebService::DigitalOcean::Size');
 }
+
+=head2 ssh_keys
+
+=cut
+
+sub ssh_keys {
+	my ($self) = @_;
+	
+	$self->_request('ssh_keys');
+	return $self->_decode_many('WebService::DigitalOcean::SSH::Key');
+}
+
+=head2 create_ssh_key
+
+=cut
+
+sub create_ssh_key {
+	my $self = shift;
+	my %params = @_;
+
+	$self->_request('ssh_keys/new', \%params);	
+	return $self->_decode('WebService::DigitalOcean::SSH::Key');
+}
+
+
 
 
 =head1 AUTHOR

@@ -1,6 +1,6 @@
 package WebService::DigitalOcean::SSH::Key;
 use strict;
-use Object::Tiny::XS qw /id name DigitalOcean/;
+use Object::Tiny::XS qw /id name ssh_pub_key DigitalOcean/;
 
 #use 5.006;
 #use warnings FATAL => 'all';
@@ -40,8 +40,7 @@ if you don't export anything, such as for a purely object-oriented module.
 
 sub _request { 
 	my ($self, %params) = @_;
-	my $caller = ( caller(1) )[3];
-	$caller =~ s/.*:://g;
+	my $caller = $self->DigitalOcean->_caller(1);
 	$self->DigitalOcean->_request('images/' . $self->id . "/$caller/", \%params);
 }
 

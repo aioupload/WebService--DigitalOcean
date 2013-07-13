@@ -17,7 +17,6 @@ Version 0.01
 
 our $VERSION = '0.01';
 
-
 =head1 SYNOPSIS
 
 Quick summary of what the module does.
@@ -40,8 +39,7 @@ if you don't export anything, such as for a purely object-oriented module.
 
 sub _request { 
 	my ($self, %params) = @_;
-	my $caller = ( caller(1) )[3];
-	$caller =~ s/.*:://g;
+	my $caller = $self->DigitalOcean->_caller(1);
 	$self->DigitalOcean->_request('droplets/' . $self->id . "/$caller/", \%params);
 }
 
