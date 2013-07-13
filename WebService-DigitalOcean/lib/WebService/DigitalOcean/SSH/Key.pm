@@ -1,6 +1,7 @@
 package WebService::DigitalOcean::SSH::Key;
 use strict;
 use Object::Tiny::XS qw /id name ssh_pub_key DigitalOcean/;
+use Method::Signatures::Simple;
 
 #use 5.006;
 #use warnings FATAL => 'all';
@@ -38,23 +39,17 @@ if you don't export anything, such as for a purely object-oriented module.
 
 =cut
 
-sub _request { 
-	my ($self, %params) = @_;
-	my $caller = $self->DigitalOcean->_caller(1);
-	$self->DigitalOcean->_request('images/' . $self->id . "/$caller/", \%params);
-}
-
 =head2 destroy
 
 =cut
 
-sub destroy { shift->_request(@_) }
+method destroy { $self->_external_request($self->id, @_) }
 
 =head2 transfer
 
 =cut
 
-sub transfer { shift->_request(@_) }
+method transfer { $self->_external_request($self->id, @_) }
 
 =head1 AUTHOR
 

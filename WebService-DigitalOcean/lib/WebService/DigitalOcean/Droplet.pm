@@ -1,6 +1,7 @@
 package WebService::DigitalOcean::Droplet;
 use strict;
 use Object::Tiny::XS qw /status name created_at region_id backups_active image_id id size_id ip_address DigitalOcean/;
+use Method::Signatures::Simple;
 
 #use 5.006;
 #use warnings FATAL => 'all';
@@ -37,95 +38,89 @@ if you don't export anything, such as for a purely object-oriented module.
 
 =cut
 
-sub _request { 
-	my ($self, %params) = @_;
-	my $caller = $self->DigitalOcean->_caller(1);
-	$self->DigitalOcean->_request('droplets/' . $self->id . "/$caller/", \%params);
-}
-
 =head2 reboot
 
 =cut
 
-sub reboot { shift->_request(@_) }
+method reboot { $self->DigitalOcean->_external_request($self->id, @_) }
 
 =head2 power_cycle
 
 =cut
 
-sub power_cycle { shift->_request(@_) }
+method power_cycle { $self->DigialOcean->_external_request($self->id, @_) }
 
 =head2 shutdown
 
 =cut
 
-sub shutdown { shift->_request(@_) }
+method shutdown { $self->DigitalOcean->_external_request($self->id, @_) }
 
 =head2 power_off
 
 =cut
 
-sub power_off { shift->_request(@_) }
+method power_off { $self->DigitalOcean->_external_request($self->id, @_) }
 
 =head2 power_on
 
 =cut
 
-sub power_on { shift->_request(@_) }
+method power_on { $self->DigitalOcean->_external_request($self->id, @_) }
 
 =head2 password_reset
 
 =cut
 
-sub password_reset { shift->_request(@_) }
+method password_reset { $self->DigitalOcean->_external_request($self->id, @_) }
 
 =head2 resize
 
 =cut
 
-sub resize { shift->_request(@_) }
+method resize { $self->DigitalOcean->_external_request($self->id, @_) }
 
 =head2 snapshot
 
 =cut
 
-sub snapshot { shift->_request(@_) }
+method snapshot { $self->DigitalOcean->_external_request($self->id, @_) }
 
 =head2 restore
 
 =cut
 
-sub restore { shift->_request(@_) }
+method restore { $self->DigitalOcean->_external_request($self->id, @_) }
 
 =head2 rebuild
 
 =cut
 
-sub rebuild { shift->_request(@_) }
+method rebuild { $self->DigitalOcean->_external_request($self->id, @_) }
 
 =head2 enable_backups
 
 =cut
 
-sub enable_backups { shift->_request(@_) }
+method enable_backups { $self->DigitalOcean->_external_request($self->id, @_) }
 
 =head2 disable_backups
 
 =cut
 
-sub disable_backups { shift->_request(@_) }
+method disable_backups { $self->DigitalOcean->_external_request($self->id, @_) }
 
 =head2 rename
 
 =cut
 
-sub rename { shift->_request(@_) }
+method rename { $self->DigitalOcean->_external_request($self->id, @_) }
 
 =head2 destroy
 
 =cut
 
-sub destroy { shift->_request(@_) }
+method destroy { $self->DigitalOcean->_external_request($self->id, @_) }
 
 =head1 AUTHOR
 

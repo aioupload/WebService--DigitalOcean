@@ -54,9 +54,13 @@ my %json_keys = (
 	'WebService::DigitalOcean::ssh_keys' => 'ssh_keys',		
 	'WebService::DigitalOcean::create_ssh_key' => 'ssh_key',		
 
-	'WebService::DigitalOcean::Droplet::_request' => 'event_id',		
-	'WebService::DigitalOcean::Image::_request' => 'event_id',		
-	'WebService::DigitalOcean::SSH::Key::_request' => 'event_id',		
+	'WebService::DigitalOcean::_external_request' => 'event_id',		
+);
+
+my %ext_request = ( 
+	'WebService::DigitalOcean::Droplet' => 'droplets',		
+	'WebService::DigitalOcean::Image' => 'images',		
+	'WebService::DigitalOcean::SSH::Key' => 'ssh_keys',		
 );
 
 =head1 NAME
@@ -70,7 +74,6 @@ Version 0.01
 =cut
 
 our $VERSION = '0.01';
-
 
 =head1 SYNOPSIS
 
@@ -115,6 +118,13 @@ sub _request {
 	$self->caller(undef);
 }
 
+sub _external_request { 
+	my ($self, $id, %params) = @_;
+	my $caller = $self->_caller(1);
+	my $package = $self->_package;
+	$self->_request("$ext_request{$package}/$id/$caller/", \%params);
+}
+
 sub _decode { 
 	my ($self, $type, $attrs) = @_;
 	$attrs = $self->api_obj unless $attrs;
@@ -140,13 +150,14 @@ sub _create {
 	return $self->_decode($obj);
 }
 
-
 sub _caller { 
 	my ($self, $just_func) = @_;
 	my $caller = (caller(2))[3];
 	$caller =~ s/.*:://g if $just_func;
 	return $caller;
 }
+
+sub _package { (caller(1))[0] }
 
 =head2 droplets
 
