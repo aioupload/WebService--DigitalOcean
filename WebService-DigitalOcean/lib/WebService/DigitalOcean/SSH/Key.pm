@@ -39,17 +39,17 @@ if you don't export anything, such as for a purely object-oriented module.
 
 =cut
 
+=head2 edit
+
+=cut
+
+method edit { $self->DigitalOcean->_external_request($self->id, @_) }
+
 =head2 destroy
 
 =cut
 
-method destroy { $self->_external_request($self->id, @_) }
-
-=head2 transfer
-
-=cut
-
-method transfer { $self->_external_request($self->id, @_) }
+method destroy { $self->DigitalOcean->_external_request($self->id, @_) }
 
 =head1 AUTHOR
 

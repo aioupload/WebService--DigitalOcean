@@ -65,6 +65,7 @@ my %ext_request = (
 	'WebService::DigitalOcean::Droplet' => 'droplets',		
 	'WebService::DigitalOcean::Image' => 'images',		
 	'WebService::DigitalOcean::SSH::Key' => 'ssh_keys',		
+	'WebService::DigitalOcean::Domain' => 'domains',		
 );
 
 =head1 NAME
@@ -127,6 +128,7 @@ sub _external_request {
 	my $caller = $self->_caller(1);
 	my $package = $self->_package;
 	$self->_request("$ext_request{$package}/$id/$caller/", \%params);
+	return $self->api_obj;
 }
 
 sub _decode { 
