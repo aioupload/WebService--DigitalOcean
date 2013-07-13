@@ -56,6 +56,8 @@ my %json_keys = (
 	'WebService::DigitalOcean::create_ssh_key' => 'ssh_key',		
 	'WebService::DigitalOcean::ssh_key' => 'ssh_key',		
 	'WebService::DigitalOcean::domains' => 'domains',		
+	'WebService::DigitalOcean::create_domain' => 'domain',		
+	'WebService::DigitalOcean::domain' => 'domain',		
 	'WebService::DigitalOcean::_external_request' => 'event_id',		
 );
 
@@ -278,6 +280,27 @@ sub domains {
 	
 	$self->_request('domains');
 	return $self->_decode_many('WebService::DigitalOcean::Domain');
+}
+
+=head2 create_domain
+
+=cut
+
+sub create_domain {
+	my $self = shift;
+	my %params = @_;
+	return $self->_create('domains/new', \%params, 'WebService::DigitalOcean::Domain');
+}
+
+=head2 domain
+
+=cut
+
+sub domain {
+	my ($self, $id) = @_;
+
+	$self->_request("domains/$id");
+	return $self->_decode('WebService::DigitalOcean::Domain');
 }
 
 =head1 AUTHOR
