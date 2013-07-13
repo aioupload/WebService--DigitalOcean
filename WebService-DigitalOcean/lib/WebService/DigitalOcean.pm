@@ -37,6 +37,12 @@ has 'api_obj' => (
 	isa => 'Any'	
 );
 
+has 'caller' => ( 
+	is => 'rw',
+	isa => 'Any',
+	default => undef,	
+);
+
 my %json_keys = ( 
 	'WebService::DigitalOcean::droplets' => 'droplets',		
 	'WebService::DigitalOcean::create_droplet' => 'droplet',		
@@ -46,6 +52,7 @@ my %json_keys = (
 	'WebService::DigitalOcean::image' => 'image',		
 	'WebService::DigitalOcean::sizes' => 'sizes',		
 	'WebService::DigitalOcean::ssh_keys' => 'ssh_keys',		
+	'WebService::DigitalOcean::create_ssh_key' => 'ssh_key',		
 
 	'WebService::DigitalOcean::Droplet::_request' => 'event_id',		
 	'WebService::DigitalOcean::Image::_request' => 'event_id',		
@@ -97,12 +104,15 @@ sub _request {
 	print "$uri\n";
 	my $response = $self->ua->request($req);
 
-	my $caller = $self->_caller;
+	my $caller = $self->caller ? $self->caller : $self->_caller;
 	my $json = JSON::XS->new->utf8->decode ($response->content);
 	my $message = $json->{message} || $json->{error_message};
 	die "ERROR $message" if $json->{status} ne 'OK';
 
 	$self->api_obj($json->{$json_keys{$caller}});
+
+	#reset caller
+	$self->caller(undef);
 }
 
 sub _decode { 
@@ -124,9 +134,10 @@ sub _decode_many {
 }
 
 sub _create { 
-	my ($self) = @_;
-	$self->_request('droplets');
-	return $self->_decode_many('WebService::DigitalOcean::Droplet');
+	my ($self, $request, $params, $obj) = @_;
+	$self->caller($self->_caller);
+	$self->_request($request, $params);
+	return $self->_decode($obj);
 }
 
 sub _caller { 
@@ -154,9 +165,7 @@ sub droplets {
 sub create_droplet {
 	my $self = shift;
 	my %params = @_;
-
-	$self->_request('droplets/new', \%params);	
-	return $self->_decode('WebService::DigitalOcean::Droplet');
+	return $self->_create('droplets/new', \%params, 'WebService::DigitalOcean::Droplet');
 }
 
 =head2 droplet
@@ -203,7 +212,6 @@ sub image {
 	return $self->_decode('WebService::DigitalOcean::Image');
 }
 
-
 =head2 sizes
 
 =cut
@@ -233,13 +241,8 @@ sub ssh_keys {
 sub create_ssh_key {
 	my $self = shift;
 	my %params = @_;
-
-	$self->_request('ssh_keys/new', \%params);	
-	return $self->_decode('WebService::DigitalOcean::SSH::Key');
+	return $self->_create('ssh_keys/new', \%params, 'WebService::DigitalOcean::SSH::Key');
 }
-
-
-
 
 =head1 AUTHOR
 
