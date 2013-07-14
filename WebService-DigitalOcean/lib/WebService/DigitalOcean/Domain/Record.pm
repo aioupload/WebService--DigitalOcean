@@ -1,6 +1,6 @@
-package WebService::DigitalOcean::Domain;
+package WebService::DigitalOcean::Domain::Record;
 use strict;
-use Object::Tiny::XS qw /id name ttl live_zone_file error zone_file_with_error DigitalOcean/;
+use Object::Tiny::XS qw /id domain_id record_type name data priority port weight Domain DigitalOcean/;
 use Method::Signatures::Simple;
 
 #use 5.006;
@@ -38,45 +38,22 @@ if you don't export anything, such as for a purely object-oriented module.
 
 =cut
 
-method _request($json_obj_key, $request_append, @args) { 
-	$self->DigitalOcean->json_obj_key($json_obj_key);
-	$self->DigitalOcean->caller('records');
-	$self->DigitalOcean->request_append($request_append);
-	$self->DigitalOcean->_external_request($self->id, @args);
+=head2 edit
+
+=cut
+
+method edit { 
+	$self->Domain->_request('record', $self->id . '/edit', @_);
+	return $self->DigitalOcean->_decode('WebService::DigitalOcean::Domain::Record');
 }
 
 =head2 destroy
 
 =cut
 
-method destroy { $self->DigitalOcean->_external_request($self->id, @_) }
-
-=head2 records
-
-=cut
-
-method records { 
-	$self->_request('records','');
-	return $self->DigitalOcean->_decode_many('WebService::DigitalOcean::Domain::Record');
-}
-
-=head2 create_record
-
-=cut
-
-method create_record { 
-	$self->_request('record','new', @_);
-	return $self->DigitalOcean->_decode('WebService::DigitalOcean::Domain::Record');
-}
-
-=head2 record
-
-=cut
-
-method record($id) { 
-	$self->_request('record', $id);
-	$self->DigitalOcean->api_obj->{Domain} = $self;
-	return $self->DigitalOcean->_decode('WebService::DigitalOcean::Domain::Record');
+method destroy { 
+	$self->Domain->_request('', $self->id . '/destroy');
+	return 1;
 }
 
 =head1 AUTHOR

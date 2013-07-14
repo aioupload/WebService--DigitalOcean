@@ -10,6 +10,7 @@ use WebService::DigitalOcean::Size;
 use WebService::DigitalOcean::Image;
 use WebService::DigitalOcean::SSH::Key;
 use WebService::DigitalOcean::Domain;
+use WebService::DigitalOcean::Domain::Record;
 
 #use 5.006;
 #use warnings FATAL => 'all';
@@ -42,6 +43,18 @@ has 'caller' => (
 	is => 'rw',
 	isa => 'Any',
 	default => undef,	
+);
+
+has 'request_append' => ( 
+	is => 'rw',
+	isa => 'Str',
+	default => '',	
+);
+
+has 'json_obj_key' => ( 
+	is => 'rw',
+	isa => 'Any',
+	default => undef,
 );
 
 my %json_keys = ( 
@@ -117,17 +130,22 @@ sub _request {
 	my $message = $json->{message} || $json->{error_message};
 	die "ERROR $message" if $json->{status} ne 'OK';
 
-	$self->api_obj($json->{$json_keys{$caller}});
+	my $obj_key = $self->json_obj_key ? $self->json_obj_key : 
+				  $json_keys{$caller} ? $json_keys{$caller} : '';
 
-	#reset caller
+	$self->api_obj($json->{$obj_key});
+
 	$self->caller(undef);
+	$self->json_obj_key(undef);
 }
 
 sub _external_request { 
 	my ($self, $id, %params) = @_;
-	my $caller = $self->_caller(1);
+	my $caller = $self->caller ? $self->caller : $self->_caller(1);
 	my $package = $self->_package;
-	$self->_request("$ext_request{$package}/$id/$caller/", \%params);
+	$self->_request("$ext_request{$package}/$id/$caller/" . $self->request_append, \%params);
+	$self->request_append('');
+	$self->caller(undef);
 	return $self->api_obj;
 }
 
